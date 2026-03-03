@@ -1,13 +1,9 @@
-<<<<<<< Updated upstream
-backend/node_modules/
-frontend/node_modules/
-backend/.env
-frontend/.env
-.env
-=======
 my-app/backend/node_modules/
 my-app/frontend/node_modules/
+
+# dotenv files (never commit secrets)
 my-app/backend/.env
+my-app/frontend/.env
 .env
+
 my-app/frontend/build/
->>>>>>> Stashed changes
