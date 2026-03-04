@@ -3,3 +3,5 @@ my-app/frontend/node_modules/
 my-app/backend/.env
 .env
 my-app/frontend/build/
+package.json
+package-lock.json
