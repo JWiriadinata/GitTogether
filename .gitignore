@@ -1,3 +1,17 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+Thumbs.db
+Desktop.ini
+._*
+
+# IDE / Editor directories
+.idea/
+.vscode/
+
+# React build output (Create React App)
+build/
+
 # Logs
 logs
 *.log
