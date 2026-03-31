@@ -1,24 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
+import Layout from "./components/Layout";
+import Auth from "./components/Auth";
+import ProjectListPage from "./pages/ProjectListPage";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
+import NewProjectPage from "./pages/NewProjectPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate to="/projects" replace />} />
+            <Route path="projects" element={<ProjectListPage />} />
+            <Route
+              path="projects/new"
+              element={
+                <Auth>
+                  <NewProjectPage />
+                </Auth>
+              }
+            />
+            <Route path="projects/:id" element={<ProjectDetailPage />} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="register" element={<RegisterPage />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/projects" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

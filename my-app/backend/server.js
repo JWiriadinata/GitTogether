@@ -5,6 +5,7 @@ require('dotenv').config({ path: '.env' });
 
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const projectRoutes = require("./routes/projectRoutes");
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use("/api/auth", authRoutes);
 
 // Main change: mount user profile management routes
 app.use("/api/users", userRoutes);
+app.use("/api/projects", projectRoutes);
 
 app.get('/', (req, res) => {
   res.send('API is running');
