@@ -11,7 +11,7 @@ function excerpt(text, max = 120) {
 }
 
 export default function ProjectListPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -19,6 +19,8 @@ export default function ProjectListPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setLoading(true);
+      setError("");
       try {
         const data = await api("/api/projects");
         if (!cancelled) setProjects(Array.isArray(data) ? data : []);
@@ -31,7 +33,7 @@ export default function ProjectListPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [token]);
 
   if (loading) {
     return (

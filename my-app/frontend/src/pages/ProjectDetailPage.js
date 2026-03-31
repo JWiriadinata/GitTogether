@@ -9,20 +9,22 @@ export default function ProjectDetailPage() {
   const { isAuthenticated } = useAuth();
 
   const [project, setProject] = useState(null);
-  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [interestError, setInterestError] = useState("");
   const [loading, setLoading] = useState(true);
   const [interestBusy, setInterestBusy] = useState(false);
 
   const load = useCallback(async () => {
-    setError("");
+    setLoadError("");
+    setInterestError("");
     try {
       const data = await api(`/api/projects/${id}`);
       setProject(data);
     } catch (e) {
       if (e.status === 404) {
-        setError("Project not found.");
+        setLoadError("Project not found.");
       } else {
-        setError(e.message || "Could not load project");
+        setLoadError(e.message || "Could not load project");
       }
       setProject(null);
     } finally {
@@ -35,12 +37,13 @@ export default function ProjectDetailPage() {
     load();
   }, [load]);
 
-  async function setInterest(next) {
+  async function updateInterest(next) {
     if (!isAuthenticated) {
       navigate("/login", { state: { from: { pathname: `/projects/${id}` } } });
       return;
     }
     setInterestBusy(true);
+    setInterestError("");
     try {
       const updated = await api(`/api/projects/${id}/interest`, {
         method: "POST",
@@ -48,7 +51,7 @@ export default function ProjectDetailPage() {
       });
       setProject(updated);
     } catch (e) {
-      setError(e.message || "Could not update interest");
+      setInterestError(e.message || "Could not update interest");
     } finally {
       setInterestBusy(false);
     }
@@ -62,10 +65,10 @@ export default function ProjectDetailPage() {
     );
   }
 
-  if (error || !project) {
+  if (loadError || !project) {
     return (
       <div className="page page--narrow">
-        <p className="form-error">{error || "Something went wrong."}</p>
+        <p className="form-error">{loadError || "Something went wrong."}</p>
         <Link to="/projects" className="inline-link">
           ← Back to projects
         </Link>
@@ -99,6 +102,12 @@ export default function ProjectDetailPage() {
           )}
         </div>
 
+        {interestError ? (
+          <p className="form-error interest-inline-error" role="alert">
+            {interestError}
+          </p>
+        ) : null}
+
         <div className="detail-actions">
           <div className="interest-summary">
             <span className="interest-count">
@@ -117,7 +126,7 @@ export default function ProjectDetailPage() {
                   type="button"
                   className="btn btn--secondary"
                   disabled={interestBusy}
-                  onClick={() => setInterest(false)}
+                  onClick={() => updateInterest(false)}
                 >
                   {interestBusy ? "Updating…" : "Remove interest"}
                 </button>
@@ -126,7 +135,7 @@ export default function ProjectDetailPage() {
                   type="button"
                   className="btn btn--interest"
                   disabled={interestBusy}
-                  onClick={() => setInterest(true)}
+                  onClick={() => updateInterest(true)}
                 >
                   {interestBusy ? "Saving…" : "I’m interested"}
                 </button>
@@ -141,8 +150,14 @@ export default function ProjectDetailPage() {
             <ul className="interested-list">
               {project.interestedUsers.map((u) => (
                 <li key={u.id}>
-                  <span className="interested-name">{u.name}</span>
-                  <span className="text-muted">@{u.username}</span>
+                  {u.name ? (
+                    <>
+                      <span className="interested-name">{u.name}</span>
+                      <span className="text-muted"> @{u.username}</span>
+                    </>
+                  ) : (
+                    <span className="interested-name">@{u.username}</span>
+                  )}
                 </li>
               ))}
             </ul>

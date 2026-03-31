@@ -190,6 +190,10 @@ body {
   font-size: 0.9rem;
 }
 
+.interest-inline-error {
+  margin: 0.75rem 0 0;
+}
+
 .form-actions {
   display: flex;
   gap: 0.75rem;
