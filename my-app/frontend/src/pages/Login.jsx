@@ -5,14 +5,11 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Check if we came from a protected page, otherwise default to projects
     const from = location.state?.from?.pathname || "/projects";
 
     const handleFakeLogin = () => {
-        // Save a dummy token to test the Auth guard
         localStorage.setItem('token', 'dummy-jwt-token');
         
-        // Redirect the user back to where they were trying to go
         navigate(from, { replace: true });
     };
 
