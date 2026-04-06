@@ -7,3 +7,6 @@ my-app/frontend/.env
 .env
 
 my-app/frontend/build/
+
+package.json
+package-lock.json

@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# Website Design for MVP
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a code bundle for Git-Together frontend for our MVP.
 
 ## Available Scripts
 
