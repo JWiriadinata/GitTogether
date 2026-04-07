@@ -5,6 +5,7 @@ import Auth from "./components/Auth";
 import ProjectListPage from "./pages/ProjectListPage";
 import ProjectDetailPage from "./pages/ProjectDetailPage";
 import NewProjectPage from "./pages/NewProjectPage";
+import EditProjectPage from "./pages/EditProjectPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import "./App.css";
@@ -22,6 +23,14 @@ function App() {
               element={
                 <Auth>
                   <NewProjectPage />
+                </Auth>
+              }
+            />
+            <Route
+              path="projects/:id/edit"
+              element={
+                <Auth>
+                  <EditProjectPage />
                 </Auth>
               }
             />

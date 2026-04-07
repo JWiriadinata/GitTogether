@@ -137,6 +137,85 @@ exports.createProject = async (req, res) => {
   }
 };
 
+exports.updateProject = async (req, res) => {
+  try {
+    const userId = req.user && req.user.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid project id" });
+    }
+
+    const { title, description } = req.body || {};
+    const updates = {};
+    if (typeof title === "string") updates.title = title.trim();
+    if (typeof description === "string") updates.description = description.trim();
+
+    if (Object.keys(updates).length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No valid fields provided for update" });
+    }
+
+    if (Object.prototype.hasOwnProperty.call(updates, "title") && !updates.title) {
+      return res.status(400).json({ message: "Title cannot be empty" });
+    }
+
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    if (project.owner.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    if (updates.title !== undefined) project.title = updates.title;
+    if (updates.description !== undefined) project.description = updates.description;
+    await project.save();
+
+    const populated = await Project.findById(project._id)
+      .populate("owner", "username name")
+      .populate("interestedUsers", "username name")
+      .lean();
+
+    return res.status(200).json(projectToJSON(populated, userId));
+  } catch (err) {
+    return res.status(500).json({ message: err.message || "Server error" });
+  }
+};
+
+exports.deleteProject = async (req, res) => {
+  try {
+    const userId = req.user && req.user.id;
+    if (!userId) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid project id" });
+    }
+
+    const project = await Project.findById(id);
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    if (project.owner.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    await Project.deleteOne({ _id: id });
+    return res.status(204).send();
+  } catch (err) {
+    return res.status(500).json({ message: err.message || "Server error" });
+  }
+};
+
 exports.setInterest = async (req, res) => {
   try {
     const userId = req.user && req.user.id;

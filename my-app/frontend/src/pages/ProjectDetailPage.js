@@ -118,7 +118,15 @@ export default function ProjectDetailPage() {
           </div>
 
           {project.isMine ? (
-            <p className="text-muted owner-note">This is your project.</p>
+            <div className="owner-note">
+              <p className="text-muted">This is your project.</p>
+              <Link
+                to={`/projects/${id}/edit`}
+                className="btn btn--secondary"
+              >
+                Edit project
+              </Link>
+            </div>
           ) : (
             <div className="interest-buttons">
               {project.meInterested ? (

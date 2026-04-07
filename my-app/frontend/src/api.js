@@ -19,7 +19,10 @@ export async function api(path, options = {}) {
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const res = await fetch(path, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
+  const data =
+    res.status === 204
+      ? {}
+      : await res.json().catch(() => ({}));
   if (!res.ok) {
     const msg = data.message || res.statusText || "Request failed";
     const err = new Error(msg);
