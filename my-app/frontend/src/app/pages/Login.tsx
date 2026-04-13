@@ -13,7 +13,7 @@ export function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -31,7 +31,7 @@ export function Login() {
       localStorage.setItem("token", data.token);
       navigate("/home");
     } catch {
-      setError("Could not connect to server");
+      setError("Could not connect to server. Is the backend running?");
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ export function Login() {
               </div>
 
               {error && (
-                <p className="text-sm text-red-500">{error}</p>
+                <p className="text-sm text-red-600">{error}</p>
               )}
 
               <Button type="submit" className="w-full" disabled={loading}>

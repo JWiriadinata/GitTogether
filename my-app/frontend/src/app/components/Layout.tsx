@@ -12,7 +12,7 @@ export function Layout() {
   };
 
   const navItems = [
-    { path: "/", icon: Home, label: "Home" },
+    { path: "/home", icon: Home, label: "Home" },
     { path: "/projects", icon: Search, label: "Browse Projects" },
     { path: "/profile", icon: User, label: "Profile" },
   ];

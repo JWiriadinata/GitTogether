@@ -19,10 +19,43 @@ export function Register() {
     confirmPassword: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // In a real app, validate and create account here
-    navigate("/");
+    setError("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.username,
+          name: formData.name,
+          email: formData.email,
+          college: formData.college,
+          password: formData.password,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Registration failed");
+        return;
+      }
+      localStorage.setItem("token", data.token);
+      navigate("/home");
+    } catch {
+      setError("Could not connect to server. Is the backend running?");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateField = (field: string, value: string) => {
@@ -185,6 +218,9 @@ export function Register() {
                       required
                     />
                   </div>
+                  {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                    <p className="text-sm text-red-600">Passwords do not match</p>
+                  )}
                 </div>
               </div>
 
@@ -195,8 +231,12 @@ export function Register() {
                 </p>
               </div>
 
-              <Button type="submit" className="w-full">
-                Create Account
+              {error && (
+                <p className="text-sm text-red-600">{error}</p>
+              )}
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Creating account..." : "Create Account"}
               </Button>
             </form>
 

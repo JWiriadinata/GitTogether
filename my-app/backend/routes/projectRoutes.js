@@ -2,12 +2,18 @@ const express = require('express');
 const router = express.Router();
 const verifyJWT = require('../middleware/verifyJWT');
 
-router.post('/post', verifyJWT, (req, res) => {
-    console.log('what');
-    res.json({ 
-        message: 'This is a protected route',
-        user: req.user,
-        roles: req.roles
-    });
-});
+const {
+  createProject,
+  getProjects,
+  getProjectById,
+  updateProject,
+  deleteProject,
+} = require('../controllers/projectController');
+
+router.post('/', verifyJWT, createProject);
+router.get('/', getProjects);
+router.get('/:id', getProjectById);
+router.patch('/:id', verifyJWT, updateProject);
+router.delete('/:id', verifyJWT, deleteProject);
+
 module.exports = router;

@@ -4,9 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "vite --port 3000",
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "echo \"No tests specified\""
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.0",
