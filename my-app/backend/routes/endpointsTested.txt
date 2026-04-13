@@ -7,12 +7,12 @@
 #
 
 # 1. Register
-curl -s -X POST http://localhost:5000/api/auth/register \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X POST http://localhost:5001/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","name":"Test User","email":"test@example.com","college":"MIT","password":"secret123"}' | jq
+  -d '{"username":"testuser","name":"Test User","email":"test@example.com","college":"MIT","password":"secret123"}'; jq . /tmp/res.json
 
 # 2. Login and save token
-TOKEN=$(curl -s -X POST http://localhost:5000/api/auth/login \
+TOKEN=$(curl -s -X POST http://localhost:5001/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"identifier":"test@example.com","password":"secret123"}' | jq -r '.token')
 
@@ -25,19 +25,19 @@ echo $TOKEN  # confirm it's set
 #
 
 # Missing fields → expect 400
-curl -s -X POST http://localhost:5000/api/auth/register \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X POST http://localhost:5001/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","password":"secret123"}' | jq
+  -d '{"username":"testuser","password":"secret123"}'; jq . /tmp/res.json
 
 # Duplicate user → expect 409
-curl -s -X POST http://localhost:5000/api/auth/register \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X POST http://localhost:5001/api/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username":"testuser","name":"Test User","email":"test@example.com","college":"MIT","password":"secret123"}' | jq
+  -d '{"username":"testuser","name":"Test User","email":"test@example.com","college":"MIT","password":"secret123"}'; jq . /tmp/res.json
 
 # Wrong password → expect 401
-curl -s -X POST http://localhost:5000/api/auth/login \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X POST http://localhost:5001/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"identifier":"test@example.com","password":"wrongpassword"}' | jq
+  -d '{"identifier":"test@example.com","password":"wrongpassword"}'; jq . /tmp/res.json
 
 
 
@@ -46,17 +46,17 @@ curl -s -X POST http://localhost:5000/api/auth/login \
 #
 
 # Get profile → expect 200 with user data
-curl -s http://localhost:5000/api/users/me \
-  -H "Authorization: Bearer $TOKEN" | jq
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" http://localhost:5001/api/users/me \
+  -H "Authorization: Bearer $TOKEN"; jq . /tmp/res.json
 
 # No token → expect 401/403
-curl -s http://localhost:5000/api/users/me | jq
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" http://localhost:5001/api/users/me; jq . /tmp/res.json
 
 # Update name → expect 200 with updated data
-curl -s -X PATCH http://localhost:5000/api/users/me \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5001/api/users/me \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"name":"Updated Name"}' | jq
+  -d '{"name":"Updated Name"}'; jq . /tmp/res.json
 
 
 
@@ -65,7 +65,7 @@ curl -s -X PATCH http://localhost:5000/api/users/me \
 #
 
 # Create project → expect 201 with project (college auto-filled from user)
-PROJECT_ID=$(curl -s -X POST http://localhost:5000/api/projects \
+PROJECT_ID=$(curl -s -X POST http://localhost:5001/api/projects \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"title":"My App","description":"Looking for devs","techStack":["React","Node"],"rolesNeeded":["Frontend Dev"]}' \
@@ -74,37 +74,37 @@ PROJECT_ID=$(curl -s -X POST http://localhost:5000/api/projects \
 echo $PROJECT_ID  # confirm it's set
 
 # Create with missing fields → expect 400
-curl -s -X POST http://localhost:5000/api/projects \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X POST http://localhost:5001/api/projects \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"title":"No description"}' | jq
+  -d '{"title":"No description"}'; jq . /tmp/res.json
 
 # Create with no token → expect 401/403
-curl -s -X POST http://localhost:5000/api/projects \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X POST http://localhost:5001/api/projects \
   -H "Content-Type: application/json" \
-  -d '{"title":"My App","description":"test"}' | jq
+  -d '{"title":"My App","description":"test"}'; jq . /tmp/res.json
 
 # List all open projects (public) → expect 200 array
-curl -s http://localhost:5000/api/projects | jq
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" http://localhost:5001/api/projects; jq . /tmp/res.json
 
 # Get one by ID → expect 200
-curl -s http://localhost:5000/api/projects/$PROJECT_ID | jq
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" http://localhost:5001/api/projects/$PROJECT_ID; jq . /tmp/res.json
 
 # Get invalid ID → expect 404
-curl -s http://localhost:5000/api/projects/000000000000000000000000 | jq
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" http://localhost:5001/api/projects/000000000000000000000000; jq . /tmp/res.json
 
 # Update project → expect 200 with updated fields
-curl -s -X PATCH http://localhost:5000/api/projects/$PROJECT_ID \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5001/api/projects/$PROJECT_ID \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"isOpen":false,"rolesNeeded":["Backend Dev"]}' | jq
+  -d '{"isOpen":false,"rolesNeeded":["Backend Dev"]}'; jq . /tmp/res.json
 
 # Delete project → expect 200
-curl -s -X DELETE http://localhost:5000/api/projects/$PROJECT_ID \
-  -H "Authorization: Bearer $TOKEN" | jq
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X DELETE http://localhost:5001/api/projects/$PROJECT_ID \
+  -H "Authorization: Bearer $TOKEN"; jq . /tmp/res.json
 
 # Confirm deleted → expect 404
-curl -s http://localhost:5000/api/projects/$PROJECT_ID | jq
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" http://localhost:5001/api/projects/$PROJECT_ID; jq . /tmp/res.json
 
 
 
@@ -113,23 +113,23 @@ curl -s http://localhost:5000/api/projects/$PROJECT_ID | jq
 #
 
 # Register second user and get their token
-TOKEN2=$(curl -s -X POST http://localhost:5000/api/auth/register \
+TOKEN2=$(curl -s -X POST http://localhost:5001/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username":"otheruser","name":"Other User","email":"other@example.com","college":"MIT","password":"secret123"}' \
   | jq -r '.token')
 
 # Create a project as user 1
-PROJECT_ID=$(curl -s -X POST http://localhost:5000/api/projects \
+PROJECT_ID=$(curl -s -X POST http://localhost:5001/api/projects \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"title":"User1 Project","description":"Mine"}' \
   | jq -r '.project._id')
 
 # Try to update/delete it as user 2 → expect 403
-curl -s -X PATCH http://localhost:5000/api/projects/$PROJECT_ID \
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5001/api/projects/$PROJECT_ID \
   -H "Authorization: Bearer $TOKEN2" \
   -H "Content-Type: application/json" \
-  -d '{"title":"Hijacked"}' | jq
+  -d '{"title":"Hijacked"}'; jq . /tmp/res.json
 
-curl -s -X DELETE http://localhost:5000/api/projects/$PROJECT_ID \
-  -H "Authorization: Bearer $TOKEN2" | jq
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X DELETE http://localhost:5001/api/projects/$PROJECT_ID \
+  -H "Authorization: Bearer $TOKEN2"; jq . /tmp/res.json
