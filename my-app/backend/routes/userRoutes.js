@@ -1,12 +1,11 @@
 const express = require("express");
-
+const router = express.Router();
 const verifyJWT = require("../middleware/verifyJWT");
+
 const {
   getUserProfile,
   updateUserProfile,
 } = require("../controllers/userController");
-
-const router = express.Router();
 
 // Main change: route to get the authenticated user's profile (protected)
 router.get("/me", verifyJWT, getUserProfile);
@@ -15,4 +14,3 @@ router.get("/me", verifyJWT, getUserProfile);
 router.patch("/me", verifyJWT, updateUserProfile);
 
 module.exports = router;
-
