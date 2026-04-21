@@ -29,6 +29,7 @@ app.use("/api/auth", authRoutes);
 
 // Main change: mount user profile management routes
 app.use("/api/users", userRoutes);
+app.use("/api/projects", projectRoutes);
 
 // Main change: mount project management routes
 app.use("/api/projects", projectRoutes);
