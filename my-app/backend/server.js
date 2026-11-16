@@ -29,7 +29,6 @@ app.use("/api/auth", authRoutes);
 
 // Main change: mount user profile management routes
 app.use("/api/users", userRoutes);
-app.use("/api/projects", projectRoutes);
 
 // Main change: mount project management routes
 app.use("/api/projects", projectRoutes);
@@ -38,7 +37,8 @@ app.get('/', (req, res) => {
   res.send('API is running');
 });
 
-const PORT = process.env.PORT || 5000;
+// 5001 matches the Vite dev proxy in frontend/vite.config.ts
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 console.log('MONGO_URI loaded:', !!process.env.MONGO_URI);

@@ -156,3 +156,5 @@ vite.config.ts.timestamp-*
 package-lock.json
 package.json
 .env
+# Local planning docs (not committed)
+matching_design.md

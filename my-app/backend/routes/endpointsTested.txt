@@ -58,6 +58,34 @@ curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5
   -H "Content-Type: application/json" \
   -d '{"name":"Updated Name"}'; jq . /tmp/res.json
 
+# Update matching fields → expect 200; tags come back canonical
+# (skills → ["javascript","react","nodejs"], rolesSought → ["frontend"], experienceLevel → "intermediate")
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5001/api/users/me \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"skills":[" JS ","JavaScript","React.js","Node"],"interests":["Web Development"],"rolesSought":["Frontend Dev"],"experienceLevel":"Intermediate","availabilityHoursPerWeek":10}'; jq . /tmp/res.json
+
+# Get profile → expect the same skills/interests/rolesSought/experienceLevel/availabilityHoursPerWeek
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" http://localhost:5001/api/users/me \
+  -H "Authorization: Bearer $TOKEN"; jq . /tmp/res.json
+
+# Clear experienceLevel / availability with null → expect 200 with both null
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5001/api/users/me \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"experienceLevel":null,"availabilityHoursPerWeek":null}'; jq . /tmp/res.json
+
+# Invalid matching fields → expect 400 (skills not an array / bad experienceLevel / hours outside 0-80)
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5001/api/users/me \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"skills":"js"}'; jq . /tmp/res.json
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5001/api/users/me \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"experienceLevel":"expert"}'; jq . /tmp/res.json
+curl -s -o /tmp/res.json -w "Status: %{http_code}\n" -X PATCH http://localhost:5001/api/users/me \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"availabilityHoursPerWeek":100}'; jq . /tmp/res.json
+
 
 
 #
